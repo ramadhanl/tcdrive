@@ -41,53 +41,65 @@ class Kelola_data extends CI_Controller {
 		$stemmerFactory = new \Sastrawi\Stemmer\StemmerFactory();
 		$stemmer  = $stemmerFactory->createStemmer();
 
-		$query = $this->db->get('data_kp');
+		$query = $this->db->get_where('data_kp', array('status' => NULL));
 		foreach ($query->result() as $row)
-		{
-			//echo "<p>========================================</p>";
-		    $id_doc = $row->id;
-		    //echo "<p>".$id_doc."</p>";
+		{	
+			$data = array('status' => 1);
+			$this->db->where('id', $row->id);
+			$this->db->update('data_kp', $data);
+
+			$id_doc = $row->id;
 		    $judul = $row->judul_kp;
 		    $tokens = $tokenizer->tokenize($judul);
+		    //Mencari term frequency
 		    foreach ($tokens as $token) {
-		    	//echo "<p>Before : ".$token."</p>";
 		    	$token = $stemmer->stem($token);
-		    	//echo "<p>After : ".$token."</p>";
 		    	if(strlen($token)!==0){
 		    		$query2=$this->db->get_where('terms', array('term' => $token));
-		    		foreach ($query2->result() as $row2){
-		    			$id_term=$row2->id_term;
-		    		}
 		    		$banyak=$query2->num_rows();
 		    		if($banyak==0){
-		    			//echo "<p>Term ".$token." belum ada lo</p>";
 		    			$data = array('term' => $token);
 		    			$this->db->insert('terms', $data);
 		    			echo "<p>Insert ".$token." to terms table.</p>";
-		    		}
+		    		}    
 		    		else{
-		    			//echo "<p>Term ".$token." sudah ada</p>"; 
+		    			$query2=$this->db->get_where('terms', array('term' => $token));
+			    		foreach ($query2->result() as $row2){
+			    			$id_term=$row2->id_term;
+			    		}
 		    			$query3 = $this->db->get_where('tf', array('id_term' => $id_term,'id_doc'=>$id_doc));
 						$banyak=$query3->num_rows();
 						if($banyak==0){
 		    				$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => 0);
-		    				$this->db->insert('tf', $data); 
+		    				$this->db->insert('tf', $data);
 		    				echo "<p>Insert ".$id_term." and ".$id_doc." to tf table.</p>";
 		    			}
 		    			else{
-		    				$query3 = $this->db->get_where('terms', array('id_term' => $id_term,'id_doc'=>$id_doc));
-		    				foreach ($query3->result() as $row3){
-								$frequency = $row3->frequency;
-								$id = $row3->id;}
+		    				$query4 = $this->db->get_where('tf', array('id_term' => $id_term,'id_doc'=>$id_doc));
+		    				foreach ($query4->result() as $row4){
+								$frequency = $row4->frequency;
+								$id = $row4->id;}
 							$frequency=$frequency+1;
-							$data = array('id_term' => $id_term,'id_doc'=>$id_doc);
+							$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => $frequency);
 							$this->db->where('id', $id);
 							$this->db->update('tf', $data); 
+							echo "<p>Update frequency row with id =  ".$id." to tf table.</p>";
 		    			}
 		    		}
 		    	}
 		    }
 		}
-
+		$query=$this->db->get('terms');
+	    foreach ($query->result() as $row){
+			$id_term=$row->id_term;
+			echo $id_term."-\n";
+			$query2 = $this->db->get_where('tf', array('id_term' => $id_term));
+			$df=$query2->num_rows();
+			$n = $this->db->get('data_kp')->num_rows();
+			$idf = log($n/$df);
+			$data = array('df' => $df,'idf' => $idf);
+			$this->db->where('id_term', $id_term);
+			$this->db->update('terms', $data); 
+		}
 	}
 }
