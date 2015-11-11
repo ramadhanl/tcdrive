@@ -60,7 +60,13 @@ class Kelola_data extends CI_Controller {
 		    		if($banyak==0){
 		    			$data = array('term' => $token);
 		    			$this->db->insert('terms', $data);
-		    			echo "<p>Insert ".$token." to terms table.</p>";
+		    			// echo "<p>Insert ".$token." to terms table.</p>";
+		    			$query2=$this->db->get_where('terms', array('term' => $token));
+			    		foreach ($query2->result() as $row2){
+			    			$id_term=$row2->id_term;
+			    		}
+		    			$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => 1);
+		    			$this->db->insert('tf', $data);
 		    		}    
 		    		else{
 		    			$query2=$this->db->get_where('terms', array('term' => $token));
@@ -70,9 +76,9 @@ class Kelola_data extends CI_Controller {
 		    			$query3 = $this->db->get_where('tf', array('id_term' => $id_term,'id_doc'=>$id_doc));
 						$banyak=$query3->num_rows();
 						if($banyak==0){
-		    				$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => 0);
+		    				$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => 1);
 		    				$this->db->insert('tf', $data);
-		    				echo "<p>Insert ".$id_term." and ".$id_doc." to tf table.</p>";
+		    				// echo "<p>Insert ".$id_term." and ".$id_doc." to tf table.</p>";
 		    			}
 		    			else{
 		    				$query4 = $this->db->get_where('tf', array('id_term' => $id_term,'id_doc'=>$id_doc));
@@ -83,7 +89,7 @@ class Kelola_data extends CI_Controller {
 							$data = array('id_term' => $id_term,'id_doc'=>$id_doc,'frequency' => $frequency);
 							$this->db->where('id', $id);
 							$this->db->update('tf', $data); 
-							echo "<p>Update frequency row with id =  ".$id." to tf table.</p>";
+							// echo "<p>Update frequency row with id =  ".$id." and frequency = ".$frequency." to tf table.</p>";
 		    			}
 		    		}
 		    	}
@@ -92,7 +98,6 @@ class Kelola_data extends CI_Controller {
 		$query=$this->db->get('terms');
 	    foreach ($query->result() as $row){
 			$id_term=$row->id_term;
-			echo $id_term."-\n";
 			$query2 = $this->db->get_where('tf', array('id_term' => $id_term));
 			$df=$query2->num_rows();
 			$n = $this->db->get('data_kp')->num_rows();
