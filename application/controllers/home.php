@@ -1,34 +1,45 @@
 <?php
 
 class Home extends CI_Controller {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->helper(array('form', 'url'));
+	}
 	public function index()
 	{
 		$this->load->view('home');
 	}
-	public function tokenizer()
+	public function menu()
 	{
-		require_once  __DIR__.'/sastrawi/vendor/autoload.php';
-		$tokenizerFactory  = new \Sastrawi\Tokenizer\TokenizerFactory();
-		$tokenizer = $tokenizerFactory->createDefaultTokenizer();
-		$tokens = $tokenizer->tokenize('Saya membeli barang seharga Rp 5.000 di Jl. Prof. Soepomo no. 67.');
-		var_dump($tokens);
+		$this->load->view('menu2');
 	}
-	public function stemmer(){
-		require_once __DIR__.'/sastrawi/vendor/autoload.php';
-		
-		// create stemmer
-		// cukup dijalankan sekali saja, biasanya didaftarkan di service container
-		$stemmerFactory = new \Sastrawi\Stemmer\StemmerFactory();
-		$stemmer  = $stemmerFactory->createStemmer();
-
-		// stem
-		$sentence = 'Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan';
-		$output   = $stemmer->stem($sentence);
-
-		echo $output . "\n";
-		// ekonomi indonesia sedang dalam tumbuh yang bangga
-
-		echo $stemmer->stem('Mereka meniru-nirukannya') . "\n";
-		// mereka tiru
+	public function do_upload()
+	{
+		/*$dir = 'uploads';
+		if ( !file_exists($dir) ) {
+		     $oldmask = umask(0);  // helpful when used in linux server  
+		     mkdir ($dir, 0744);
+		}*/
+		$config['upload_path'] = 'C:/wamp/www/tcdrive/uploads';
+		$config['allowed_types'] = 'gif|jpg|jpeg|png|iso|dmg|zip|rar|doc|docx|xls|xlsx|ppt|pptx|csv|ods|odt|odp|pdf|rtf|sxc|sxi|txt|exe|avi|mpeg|mp3|mp4|3gp';
+		$config['max_size']	= '300';
+		$config['max_width']  = '1024';
+		$config['max_height']  = '768';
+		$config['overwrite']  = TRUE;
+		$file = $_FILES['userfile']['name'];
+		$ext = substr(strrchr($file, '.'), 1);
+		$config['convert_dots'] = FALSE;
+		$this->load->library('upload',$config);
+		$this->upload->initialize($config);
+		if(!$this->upload->do_upload('userfile')){
+			$upload_data = $this->upload->data();
+			echo $this->upload->display_errors();
+		}
+		else{
+			$file_data = $this->upload->data();
+			$data = base_url().'images/'.$file_data['file_name'];
+			echo "sukses";
+		}
 	}
 }

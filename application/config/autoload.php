@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$db= new mysqli('localhost','root','','beasiswa') or die();
+$db= new mysqli('localhost','root','','tcdrive') or die();
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -66,7 +66,7 @@ $autoload['libraries'] = array('database','session','form_validation','image_lib
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url', 'file', 'form');
+$autoload['helper'] = array('url', 'file', 'form','directory');
 
 
 /*
