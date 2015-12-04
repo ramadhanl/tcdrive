@@ -68,7 +68,8 @@ $(function(){
 
 	$('a.button.process').click(function(){
 		var input = $(this).parent().find('input[type=hidden]'),
-			a = $('#step4 a.download'),
+			a = $('#step4 input.cipher'),
+			b = $('#step4 input.filename')
 			password = input.val();
 
 		input.val('');
@@ -79,23 +80,17 @@ $(function(){
 		var reader = new FileReader();
 
 		if(body.hasClass('encrypt')){
-
 			// Encrypt the file!
-
 			reader.onload = function(e){
-
 				// Use the CryptoJS library and the AES cypher to encrypt the 
 				// contents of the file, held in e.target.result, with the password
-
 				var encrypted = CryptoJS.AES.encrypt(e.target.result, password);
-
 				// The download attribute will cause the contents of the href
 				// attribute to be downloaded when clicked. The download attribute
 				// also holds the name of the file that is offered for download.
-
-				a.attr('href', 'data:application/octet-stream,' + encrypted);
-				a.attr('download', file.name + '.encrypted');
-
+				a.attr('value', encrypted);
+				b.attr('value', file.name);
+				//a.attr('download', file.name + '.encrypted');
 				step(4);
 			};
 

@@ -29,7 +29,7 @@
 
 				<div class="content if-encrypt">
 					<h1>Choose file to upload</h1>
-					<h2>An encrypted copy of the file will be generated. No data is sent to our server.</h2>
+					<h2>An encrypted copy of the file will be generated. No unencrypted data is sent to our server.</h2>
 					<a class="button browse blue">Browse</a>
 					<input type="file" id="encrypt-input" />
 				</div>
@@ -53,11 +53,10 @@
 			<div id="step3">
 
 				<div class="content if-encrypt">
-					<h1>File has been encrypted</h1>
-					<h2>This phrase will be used as an encryption key. Write it down or remember it; you won't be able to restore the file without it. </h2>
+					<h2>Your password will be used as an encryption key.You won't be able to restore the file without it. </h2>
 
 					<input type="hidden" name="password" value='<?php echo $this->session->userdata('password')?>'/>
-					<a class="button process red">Upload to Cloud!</a>
+					<a class="button process red">Encrypt file!</a>
 				</div>
 
 				<div class="content if-decrypt">
@@ -74,7 +73,12 @@
 
 				<div class="content">
 					<h1>Your file is ready!</h1>
-					<a class="button download green">Download</a>
+					<a style="visibility:hidden" class="button download green">Download</a>
+					<form role="form" method="POST" action="<?php  echo base_url(); ?>menu/enc_upload" enctype="multipart/form-data">
+  						<input type="hidden" class="cipher" name="cipher" value="">
+  						<input type="hidden" class="filename" name="filename" value="">
+  						<input class="button process red" type="submit" value="Upload to cloud" />
+					</form>
 				</div>
 
 			</div>

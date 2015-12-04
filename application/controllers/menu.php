@@ -18,6 +18,20 @@ class Menu extends CI_Controller {
 		else
 			redirect(base_url("menu/login/"));
 	}
+	public function enc_upload(){
+		$dir = 'uploads/'.$this->session->userdata('username');
+		if ( !file_exists($dir) ) {
+		     $oldmask = umask(0);  // helpful when used in linux server  
+		     mkdir ($dir, 0744);
+		}
+		$cipher=$this->input->post('cipher');
+		$filename=$this->input->post('filename');
+		//echo $cipher;
+		$file = $dir.'/'.$filename.'.encrypted';
+		file_put_contents($file, $cipher);
+		redirect(base_url("menu/"));
+	}
+
 	public function cloud(){
 		$dir = './uploads/';
 		$dir = $dir.$this->session->userdata('username');
