@@ -8,7 +8,7 @@ class Menu extends CI_Controller {
 	}
 	public function index()
 	{
-		if($this->session->userdata('nama')!= NULL){
+		if($this->session->userdata('nama')){
 			$dir = './uploads/';
 			$dir = $dir.$this->session->userdata('username');
 			$map = directory_map($dir);
